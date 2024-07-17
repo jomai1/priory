@@ -11,6 +11,10 @@
 - time_required will go from 5 min to over 6 hours. This will be a slider that will increate time to the right non linear.
 - dependencies type can be 'before', 'no_order', 'after', task_id is the UUID of another task.
 
+
+Example
+```JSON
+
 {
   "id": "c0d43e1d-2dc0-4e2f-8026-78bed670305c",
   "title": "Complete Project Report",
@@ -60,3 +64,4 @@
   	}
   ]
 }
+```
