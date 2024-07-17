@@ -1,0 +1,19 @@
+{
+  "name": "priory",
+  "version": "1.0.0",
+  "description": "Task app where you can set priorities.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jomai1/priory.git"
+  },
+  "author": "Joost Mainz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jomai1/priory/issues"
+  },
+  "homepage": "https://github.com/jomai1/priory#readme"
+}
