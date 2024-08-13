@@ -2,6 +2,7 @@ import express from 'express'
 import * as fs from "fs";
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv'
+import cors from 'cors'
 dotenv.config()
 
 
@@ -16,7 +17,9 @@ function isISO8601Date(dateString) {
 	return iso8601Regex.test(dateString);
 }
 
-
+app.use(cors({
+    origin: 'http://localhost:8080' // Allow only this origin
+}));
 
 app.use(express.json());
 
@@ -63,6 +66,11 @@ app.post('/tasks/v1/create', (req, res) => {
 		error.push("title_not_a_string")
 	}
 
+	// TODO: add icon typecheck
+	if(!req.body.icon){
+		error.push("missing_icon")
+	}
+
 	if(!req.body.description){
 		error.push("missing_description")
 	}else if(typeof req.body.description != 'string'){
@@ -73,7 +81,7 @@ app.post('/tasks/v1/create', (req, res) => {
 		error.push("sub_tasks_not_array")
 	}else{
 		 for (const sub_task of req.body.sub_tasks) {
-		    if (sub_task.status != 'pending') {
+		    if (sub_task.status != 0) {
 		      	error.push("sub_task_status_wrong_format")
 		    }else if(typeof sub_task.title != 'string'){
 		    	error.push("sub_task_title_wrong_format");
@@ -157,6 +165,7 @@ app.post('/tasks/v1/create', (req, res) => {
 	const task = {
 		id: uuidv4(),
 	    title: req.body.title,
+	    icon: req.body.icon,
 	    description: req.body.description,
 	    sub_tasks: req.body.sub_tasks,
 	    deadline: req.body.deadline,
@@ -171,11 +180,6 @@ app.post('/tasks/v1/create', (req, res) => {
 
 
 	try{
-
-
-
-
-
 		fs.readFile(tasks_db_path, 'utf8', (err, data) => {
 			if (err) {
 				if (err.code === 'ENOENT') {
