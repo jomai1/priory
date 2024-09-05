@@ -50,16 +50,29 @@
         
       </div>
     </div>
+    <div v-if="showCreatePopup" class="create-popup">
+      <CreatePopup
+        class="popup-content"
+        :tasks=tasks
+        @close-popup="showCreatePopup = false"
+        @create-task="onCreateTask"
+      />  
+    </div>
+    
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 
-
+// Components
+import CreatePopup from './CreatePopup.vue'
 
 export default {
   name: 'AllTasks',
+  components: {
+      CreatePopup
+  },
   data() {
     return {
       tasks: [],
@@ -69,9 +82,43 @@ export default {
         { icon: '✅', title: 'Done' },
         { icon: '❌', title: 'Rejected' }
       ],
+      showCreatePopup: false
     }
   },
   methods: {
+    async onCreateTask(newTask){
+
+      console.log("New Task:")
+      console.log(JSON.parse(JSON.stringify(newTask)))
+
+      var data = JSON.parse(JSON.stringify(newTask))
+
+      try{
+        await axios({
+          method: 'post',
+          url: `http://localhost:${3000}/tasks/v1/create`,
+          data
+        })
+
+      }catch (error) {
+        console.log(error.response);
+      }
+
+
+
+      try{
+        const tasks_req = await axios({
+          method: "get",
+          url: `http://localhost:${3000}/tasks/v1/all-tasks`,
+        })  
+
+        this.tasks = tasks_req.data
+      }catch (error) {
+        console.log(error.response);
+      }
+      
+      this.showCreatePopup = false
+    },
     toggleExpand(id) {
       if(this.isActive == id){
         this.isActive = false;
@@ -85,6 +132,7 @@ export default {
       } 
     },
     addTask(){
+      this.showCreatePopup = true
       console.log("Add item!")
     }
   },
@@ -97,8 +145,8 @@ export default {
 
       this.tasks = tasks_req.data
     }catch (error) {
-    console.log(error.response);
-  }
+      console.log(error.response);
+    }
   }
 }
 </script>
@@ -126,24 +174,24 @@ export default {
   }
 
   #site-search {
-    flex-grow: 1; /* Allow the search input to take up available space */
+    flex-grow: 1;
     padding: 8px;
-    margin-right: 10px; /* Space between search input and button */
+    margin-right: 10px;
   }
 
   .add-button {
-    background-color: #ebebeb; /* Green background */
-    color: white; /* White text */
-    padding: 10px 20px; /* Padding around the text */
-    border: none; /* Remove border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 16px; /* Larger font size */
-    transition: background-color 0.3s ease; /* Smooth hover effect */
+    background-color: #ebebeb;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
   }
 
   .add-button:hover {
-    background-color: #ebebeb; /* Darker green on hover */
+    background-color: #e4e8df;
   }
 
   .list-container {
@@ -230,5 +278,30 @@ export default {
 
   .task-priority-info{
     padding-top: 40px;
+  }
+
+  .create-popup {
+    position: fixed; /* Make it float above everything and stay in position even when scrolling */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full width of the viewport */
+    height: 100vh; /* Full height of the viewport */
+    backdrop-filter: blur(10px); /* Apply blur effect to the background */
+    background-color: rgba(0, 0, 0, 0.3); /* Optional semi-transparent background color for better visibility */
+    display: flex; /* Center the popup using Flexbox */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* High z-index to ensure it's above all other elements */
+    overflow: auto; /* Make the popup scrollable if content exceeds the height */
+  }
+
+  .popup-content {
+    background-color: white; /* Background color of the popup content */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for a nice effect */
+    max-height: 90vh; /* Limit the maximum height of the popup to make it scrollable */
+    overflow: auto; /* Ensure the popup content is scrollable */
+    min-width: 550px;
   }
 </style>

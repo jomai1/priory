@@ -60,6 +60,13 @@ app.get('/tasks/v1/all-tasks', (req, res) => {
 app.post('/tasks/v1/create', (req, res) => {
 	let error = [];
 
+
+	console.log("--------------------Start")
+	console.log(req.body)
+	console.log("--------------------End")
+	
+
+
 	if(!req.body.title){
 		error.push("missing_title")
 	}else if(typeof req.body.title != 'string'){
@@ -91,13 +98,13 @@ app.post('/tasks/v1/create', (req, res) => {
 	  }
 	}
 
-	if(typeof req.body.deadline != 'string'){
-		error.push("deadline_not_a_string");
-	}else if (!isISO8601Date(req.body.deadline)) {
-    	error.push("deadline_in_wrong_format");
-	}
-	
-	if(!req.body.urgency){
+	// if(typeof req.body.deadline != 'string'){
+	// 	error.push("deadline_not_a_string");
+	// }else if (!isISO8601Date(req.body.deadline)) {
+    // 	error.push("deadline_in_wrong_format");
+	// }
+	if(req.body.urgency) req.body.urgency = parseInt(req.body.urgency)
+	if(!req.body.urgency && req.body.urgency != 0){
 		error.push("missing_urgency")
 	}else if(typeof req.body.urgency != 'number'){
 		error.push("urgency_not_a_number")
@@ -105,7 +112,8 @@ app.post('/tasks/v1/create', (req, res) => {
 		error.push("urgency_out_of_range")
 	}
 	
-	if(!req.body.benefit){
+	if(req.body.benefit) req.body.benefit = parseInt(req.body.benefit)
+	if(!req.body.benefit && req.body.benefit != 0){
 		error.push("missing_benefit")
 	}else if(typeof req.body.benefit != 'number'){
 		error.push("benefit_not_a_number")
@@ -113,7 +121,8 @@ app.post('/tasks/v1/create', (req, res) => {
 		error.push("benefit_out_of_range")
 	}
 
-	if(!req.body.effort){
+	if(req.body.effort) req.body.effort = parseInt(req.body.effort)
+	if(!req.body.effort && req.body.effort != 0){
 		error.push("missing_effort")
 	}else if(typeof req.body.effort != 'number'){
 		error.push("effort_not_a_number")
@@ -121,7 +130,8 @@ app.post('/tasks/v1/create', (req, res) => {
 		error.push("effort_out_of_range")
 	}
 
-	if(!req.body.cost){
+	if(req.body.cost) req.body.cost = parseInt(req.body.cost)
+	if(!req.body.cost && req.body.cost != 0){
 		error.push("missing_cost")
 	}else if(typeof req.body.cost != 'number'){
 		error.push("cost_not_a_number")
@@ -149,6 +159,10 @@ app.post('/tasks/v1/create', (req, res) => {
 		error.push("dependencies_not_array")
 	}else{
 		 for (const dep of req.body.dependencies) {
+
+		 	console.log("Depent")
+		 	console.log(dep)
+
 		    if (typeof dep.task_id !== 'string'){
 		      	error.push("dependencies_task_id_not_a_sting")
 		    }
